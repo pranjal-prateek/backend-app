@@ -46,5 +46,6 @@ jobs:
 
     - name: Start Node.js Application with PM2
       run: |
-        cd ~/~/actions-runner/_work/backend-app/backend-app
+        cd ~/actions-runner/_work/backend-app/backend-app
+        PORT=3794
         pm2 start app.js --name=Backend
