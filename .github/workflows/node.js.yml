@@ -43,7 +43,6 @@ jobs:
 
     - name: Start Node.js Application with PM2
       run: |
-        cd ~/actions-runner/_work/backend-app/backend-app
         - run: |
           touch .env
           echo "${{ secrets.PROD }}" > .env
