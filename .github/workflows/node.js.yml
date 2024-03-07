@@ -41,11 +41,10 @@ jobs:
         }
         EOF
 
-    - name: Restart Nginx
-      run: sudo systemctl restart nginx
-
     - name: Start Node.js Application with PM2
       run: |
         cd ~/actions-runner/_work/backend-app/backend-app
-        PORT=3794
-        pm2 start app.js --name=Backend
+        - run: |
+          touch .env
+          echo "${{ secrets.PROD }}" > .env
+        - run: pm2 restart Backend
