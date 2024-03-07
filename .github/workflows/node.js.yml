@@ -2,36 +2,36 @@ name: Deploy to EC2
 
 on:
   push:
-    branches: [ "master" ]
-  
+    branches:
+      - master  # Change this to your desired branch name
+
 jobs:
-  build:
+  deploy:
     runs-on: self-hosted
-    strategy:
-      matrix:
-        node-version: [18.x]
 
     steps:
-    - uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v2
 
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v3
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '14'  # Change this to your desired Node.js version
 
-    - name: Install PM2
-      run: |
-        npm install -g pm2
+      - name: Install dependencies
+        run: npm ci
 
-    - name: Install dependencies
-      run: npm ci
+      - name: Set environment variables
+        run: |
+          touch .env
+          echo "${{ secrets.PROD }}" > .env
 
-    - name: Set environment variables
-      run: |
-        touch .env
-        echo "${{ secrets.PROD }}" > .env
-
-    - name: Restart Node.js application with PM2
-      run: |
-        pm2 restart Backend
+      - name: SSH into EC2 and restart PM2
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd /path/to/your/app
+            pm2 restart Backend  # Adjust this command as needed
